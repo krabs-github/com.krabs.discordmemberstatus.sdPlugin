@@ -35,7 +35,7 @@
                     var vServerID = vURLArray[5];
                     var vWidgetURL = "https://discord.com/widget?id=&theme=dark%22%20width=%22350%22%20height=%22500%22%20allowtransparency=%22true%22%20frameborder=%220%22%20sandbox=%22allow-popups%20allow-popups-to-escape-sandbox%20allow-same-origin%20allow-scripts%22";
                     var vWidgetURL = vWidgetURL.replace(/(id=)/, "id=" + vServerID);
-                    console.log("widgeturl: ", vDiscordURL)
+                    //console.log("widgeturl: ", vDiscordURL)
                     window.open(vWidgetURL, "Discord Widget", "height = 500, width = 350")
                 },
                 fKrabs_GetData: function (context, settings) {
@@ -74,7 +74,7 @@
                         var vUserStatus = "offline"
                         SendOutsideLoop(vDiscordURL, vMemberName, vUserStatus, vAvatarURL)
                         //console.log("Settings: ", vRefreshInterval, vDiscordURL, vMemberName, vAvatarURL, vUserStatus);
-                        console.log("in loop")
+                        //console.log("in loop")
 
                         //https://discordapp.com/api/guilds/420731340913115136/widget.json
 
@@ -140,7 +140,7 @@
                     /* Code here will run when the Stream Deck application is opened, the user switches between profiles or when a user adds the action
                         to their Stream Deck https://developer.elgato.com/documentation/stream-deck/sdk/events-received/#willappear
                     */
-                    console.log("onWillAppear context: ", context, " settings: ", settings);
+                    //console.log("onWillAppear context: ", context, " settings: ", settings);
                     settingsCache[context] = settings;
                     var vShowTitle = settings['vKrabs_ShowTitle'];
                     var vMemberName = settings['vKrabs_DiscordMemberName'];
@@ -155,7 +155,7 @@
                     this.fKrabs_GetData(context);
                 },
                 onWillDisappear: function (context, settings, coordinates) {
-                    console.log("onWillDisappear context: ", context, " settings: ", settings);
+                    //console.log("onWillDisappear context: ", context, " settings: ", settings);
                 },
                 SetTitle: function (context, vMemberName) {
                     let json = { event: "setTitle", context: context, payload: { title: ""+ vMemberName, target: DestinationEnum.HARDWARE_AND_SOFTWARE } };
@@ -163,7 +163,7 @@
                 },
                 getSettings: function (context, payload) {
                     websocket.send(context, 'getSettings', {});
-                    console.log(settings)
+                    //console.log(settings)
                 },
                 SetSettings: function (context, settings) {
                     var json = {
@@ -174,8 +174,8 @@
 
                     websocket.send(JSON.stringify(json));
                     settingsCache[context] = settings;
-                    console.log("New Settings", settings);
-                    console.log("New JSON", JSON.stringify(json));
+                    //console.log("New Settings", settings);
+                    //console.log("New JSON", JSON.stringify(json));
                     var vShowTitle = settings['vKrabs_ShowTitle'];
                     var vMemberName = settings['vKrabs_DiscordMemberName'];
                     if (vShowTitle == false) {
@@ -208,7 +208,7 @@
                   settingsCache[context]
                 },
                 didReceiveSettings: function (context, payload) {
-                  console.log("Did receive: ", settings)
+                  //console.log("Did receive: ", settings)
                 }
             };
 // End of let KrabsDiscordMemberStatus definition
@@ -302,7 +302,7 @@
                 };
                 websocket.onmessage = function (evt) {
                     let jsonObj = JSON.parse(evt.data);
-                    console.log("onmessage json: ", jsonObj);
+                    //console.log("onmessage json: ", jsonObj);
                     let event = jsonObj["event"];
                     let action = jsonObj["action"];
                     let context = jsonObj["context"];
@@ -331,12 +331,12 @@
                         var coordinates = jsonPayload['coordinates'];
                         KrabsDiscordMemberStatus.onWillDisappear(context, settings, coordinates);
                     } else if (event == "sendToPlugin") {
-                        console.log("sendToPlugin received payload: ", jsonPayload);
+                        //console.log("sendToPlugin received payload: ", jsonPayload);
                         if (jsonPayload != null && jsonPayload.hasOwnProperty('vKrabs_DiscordURL') && jsonPayload.hasOwnProperty('vKrabs_Interval') && jsonPayload.hasOwnProperty('vKrabs_DiscordMemberName')) {
                         KrabsDiscordMemberStatus.SetSettings(context, jsonPayload);
                       }
                     } else if (event == "didReceiveSettings") {
-                        console.log("didReceiveSettings received payload: ", jsonPayload);
+                        //console.log("didReceiveSettings received payload: ", jsonPayload);
                         if (jsonPayload != null && jsonPayload['settings'] != null) {
                           KrabsDiscordMemberStatus.SetSettings(context, jsonPayload['settings']);
                         }
