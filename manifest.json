@@ -17,7 +17,7 @@
     ],
     "SDKVersion": 2,
     "Author": "Krabs",
-    "Category": "Krabs - Stream Deck Labs",
+    "Category": "Krabs - Discord",
     "CategoryIcon": "resources/images/categoryIcon",
     "CodePath": "discordMemberStatus.html",
     "PropertyInspectorPath": "discordMemberStatus_pi.html",
@@ -25,7 +25,7 @@
     "Name": "Discord Member Status",
     "Icon": "resources/images/pluginIcon",
     "URL": "https://www.krabs.me/streamdeck-plugins",
-    "Version": "1.0.11",
+    "Version": "1.0.12",
     "OS": [
         { "Platform": "windows", "MinimumVersion": "10" },
         { "Platform": "mac", "MinimumVersion": "10.11" }
