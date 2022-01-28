@@ -54,8 +54,8 @@
                       var vAvatarURL = payload['vKrabs_DiscordMemberAvatar'];
                     }
                     var payload = settingsCache[context];
-                    var vUserStatus = "offline"
-                    SendOutsideLoop(vDiscordURL, vMemberName, vUserStatus, vAvatarURL)
+                    //var vUserStatus = "offline"
+                    //SendOutsideLoop(vDiscordURL, vMemberName, vUserStatus, vAvatarURL)
                     async function getData() {
                         var payload = settingsCache[context];
                         if (payload != null && payload.hasOwnProperty('vKrabs_Interval')) {
@@ -71,15 +71,26 @@
                         if (payload != null && payload.hasOwnProperty('vKrabs_DiscordMemberAvatar')) {
                           var vAvatarURL = payload['vKrabs_DiscordMemberAvatar'];
                         }
-                        var vUserStatus = "offline"
-                        SendOutsideLoop(vDiscordURL, vMemberName, vUserStatus, vAvatarURL)
+                        //var vUserStatus = "offline"
+                        //SendOutsideLoop(vDiscordURL, vMemberName, vUserStatus, vAvatarURL)
                         //console.log("Settings: ", vRefreshInterval, vDiscordURL, vMemberName, vAvatarURL, vUserStatus);
                         //console.log("in loop")
 
-                        //https://discordapp.com/api/guilds/420731340913115136/widget.json
-
                         const response = await fetch(vDiscordURL);
                         const u = await response.json();
+                        var vOffline;
+                        var wantedKey = 'username';
+                        var wantedVal = vMemberName;
+                        for(var i = 0; i < u.members.length; i++){
+                           if(u.members[i].hasOwnProperty(wantedKey) && u.members[i][wantedKey] === wantedVal) {
+                             var vOffline = false
+                             break;
+                           }
+                         }
+                         if (vOffline != false) {
+                           var vUserStatus = "offline"
+                           SendOutsideLoop(vDiscordURL, vMemberName, vUserStatus, vAvatarURL)
+                         }
                         for(const vUSER in u.members)
                           {
                           var vUserStatus = u.members[vUSER].status
@@ -99,8 +110,14 @@
                                 setImage(context, vAvatarBase64);
                                 KrabsDiscordMemberStatus.updateSettings(context, vDiscordURL, vMemberName, vRefreshInterval, imageUrl)
                                 });
-                            } else if (vUserStatus = "idle") {
+                            } else if (vUserStatus == "idle") {
                                 convertImgToBase64Sepia(imageUrl, function(base64Img){
+                                var vAvatarBase64 = base64Img;
+                                setImage(context, vAvatarBase64);
+                                KrabsDiscordMemberStatus.updateSettings(context, vDiscordURL, vMemberName, vRefreshInterval, imageUrl)
+                                });
+                            } else if (vUserStatus == "dnd") {
+                                convertImgToBase64Red(imageUrl, function(base64Img){
                                 var vAvatarBase64 = base64Img;
                                 setImage(context, vAvatarBase64);
                                 KrabsDiscordMemberStatus.updateSettings(context, vDiscordURL, vMemberName, vRefreshInterval, imageUrl)
@@ -111,7 +128,7 @@
                     }
                     function SendOutsideLoop(vDiscordURL, vMemberName, vUserStatus, vAvatarURL){
                       //console.log("Outside loop: ", vDiscordURL, vMemberName, vUserStatus, vAvatarURL);
-                      if (vUserStatus == "offline") {
+                      if (vUserStatus != "online" || vUserStatus != "idle" || vUserStatus != "dnd") {
                         //console.warn("Offline action would be performed: ", vMemberName, vUserStatus, vAvatarURL)
                         convertImgToBase64GrayScale(vAvatarURL, vMemberName, function(base64Img){
                         var vAvatarBase64 = base64Img;
@@ -241,6 +258,26 @@
                   canvas.width = img.width;
                   ctx.filter = 'sepia(.95)';
                     ctx.drawImage(img,0,0);
+                    var dataURL = canvas.toDataURL(outputFormat || 'image/png');
+                    callback.call(this, dataURL);
+                  // Clean up
+                    canvas = null;
+              };
+              img.src = url;
+            };
+            function convertImgToBase64Red(url, callback, outputFormat){
+              var canvas = document.createElement('CANVAS');
+              var ctx = canvas.getContext('2d');
+              var img = new Image;
+              img.crossOrigin = 'Anonymous';
+              img.onload = function(){
+                  canvas.height = img.height;
+                  canvas.width = img.width;
+                    ctx.drawImage(img,0,0);
+                    ctx.globalCompositeOperation = "color";      // set the comp op (can also use "hue")
+                    ctx.fillStyle = "DarkRed";                       // set fillstyle to color you want
+                    ctx.fillRect(0,0,img.height,img.height);                     // draw red over image
+                    ctx.globalCompositeOperation = "source-over";// restore default comp op
                     var dataURL = canvas.toDataURL(outputFormat || 'image/png');
                     callback.call(this, dataURL);
                   // Clean up
